@@ -8,4 +8,4 @@ app.use(express.json());
 
 app.use(uploadRoutes);
 
-app.listen(8000);
+app.listen(8080);
