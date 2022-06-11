@@ -47,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
     original_image_id: DataTypes.UUID,
     ground_truth: DataTypes.STRING,
     confidence: DataTypes.BIGINT,
+    is_verified: DataTypes.BOOLEAN,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE
   }, {

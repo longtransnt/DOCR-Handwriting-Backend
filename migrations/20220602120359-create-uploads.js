@@ -26,6 +26,9 @@ module.exports = {
       confidence: {
         type: Sequelize.BIGINT
       },
+      is_verified:{
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
