@@ -105,9 +105,9 @@ router.post("/api/uploads", upload.single('image'), async (req, res) => {
   await models.uploads.create({
     file_name: req.file.originalname,
     image_id: id,
+    is_verified: false,
     thumbnail_id: thumbnailId
   });
-
   res.sendStatus(201);
 });
 
