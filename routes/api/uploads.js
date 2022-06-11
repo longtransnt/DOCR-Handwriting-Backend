@@ -115,7 +115,8 @@ router.put("/api/uploads/:id",  async (req, res) => {
   models.uploads.findByPk(req.params.id).then(function(up) {
     up.update({
       ground_truth: req.body.ground_truth,
-      confidence: req.body.confidence
+      confidence: req.body.confidence,
+      is_verified: req.body.is_verified,
     }).then((note) => {
       res.json(note);
     });
