@@ -111,4 +111,15 @@ router.post("/api/uploads", upload.single('image'), async (req, res) => {
   res.sendStatus(201);
 });
 
+router.put("/api/uploads/:id",  async (req, res) => {
+  models.uploads.findByPk(req.params.id).then(function(up) {
+    up.update({
+      ground_truth: req.body.ground_truth,
+      confidence: req.body.confidence
+    }).then((note) => {
+      res.json(note);
+    });
+  });
+});
+
 module.exports = router;
