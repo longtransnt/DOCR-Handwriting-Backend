@@ -57,6 +57,9 @@ router.get("/api/uploads", async (req, res) => {
         model: models.images,
         as: "thumbnail"
       }
+    ],
+    order: [
+      ['id', 'ASC']
     ]
   });
 
