@@ -19,8 +19,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   coordinate.init({
-    id: { 
+    id: {
       type: DataTypes.BIGINT,
+      autoIncrement: true,
+      allowNull: false,
       primaryKey: true
     },
     image_id: DataTypes.UUID,
