@@ -80,29 +80,6 @@ router.get("/api/uploads", async (req, res) => {
   res.send(uploadList);
 });
 
-router.post("/api/upload/originals", upload.single('image'), async (req, res) => {
-  const id = uuidv4();
-  
-  await Promise.all([
-    uploadToS3(`originals/${id}`, req.file.buffer, req.file.mimetype),
-  ]);
-
-  await Promise.all([
-    models.originals.create({
-      id,
-      file_name: req.file.originalname,
-      csv_name: req.file.originalname,
-      bucket: S3_BUCKET,
-      key: `originals/${id}`
-    })
-  ]);
-
-  await models.originals.create({
-    file_name: req.file.originalname,
-    csv_name: req.file.originalname,
-  });
-  res.sendStatus(201);
-});
 
 
 router.post("/api/uploads", upload.single('image'), async (req, res) => {
