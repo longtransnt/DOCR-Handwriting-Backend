@@ -10,17 +10,26 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      models.originals.hasMany(models.coordinate, {
-        as: "coordinate",
-        foreignKey: "original_image_id",
-        sourceKey: "id"
+      models.uploads.hasOne(models.images, {
+        as: "image_orginal",
+        foreignKey: "id",
+        sourceKey: "image_id"
       });
     }
   }
   originals.init({
     id: {
-      type: DataTypes.UUID,
+      type: DataTypes.BIGINT,
+      autoIncrement: true,
+      allowNull: false,
       primaryKey: true
+    },
+    image_id: {
+      type: DataTypes.UUID,
+      references: {
+        model: "images",
+        key: "id"
+      }
     },
     file_name: DataTypes.STRING,
     csv_name: DataTypes.STRING
