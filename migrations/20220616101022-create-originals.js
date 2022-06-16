@@ -3,9 +3,13 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('originals', {
       id: {
-        type: Sequelize.UUID,
+        allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        allowNull: false
+        type: Sequelize.BIGINT
+      },
+      image_id: {
+        type: Sequelize.UUID
       },
       file_name: {
         type: Sequelize.STRING
