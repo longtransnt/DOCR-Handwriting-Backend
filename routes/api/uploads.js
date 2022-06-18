@@ -81,6 +81,42 @@ router.get("/api/uploads", async (req, res) => {
 });
 
 
+router.get("/api/uploads/unannotated", async (req, res) => {
+  let uploadList = await models.uploads.findAll({
+    where: {
+      ground_truth: null,
+    },
+    include: [
+      {
+        model: models.images,
+        as: "image"
+      },
+      {
+        model: models.images,
+        as: "thumbnail"
+      }
+    ],
+    order: [
+      ['id', 'ASC']
+    ]
+  });
+
+  uploadList = await Promise.all(
+    uploadList.map(async upload => {
+      const [imageUrl, thumbnailUrl] = await Promise.all([
+        getSignedUrl(upload.image.bucket, upload.image.key),
+        getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
+      ])
+      return {
+        ...upload.toJSON(),
+        imageUrl,
+        thumbnailUrl
+      }
+    })
+  );
+
+  res.send(uploadList);
+});
 
 router.post("/api/uploads", upload.single('image'), async (req, res) => {
   const id = uuidv4();
