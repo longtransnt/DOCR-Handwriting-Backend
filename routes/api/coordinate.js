@@ -18,14 +18,37 @@ router.get("/api/coordinate/:id", function (req, res) {
 
 router.post("/api/coordinate", async (req, res) => {
   await console.log(req.body);
-  // await models.coordinate.create({
-  //   image_name: req.body.image_name,
-  //   original_image_name: req.body.original_image_name,
-  //   max_x: req.body.max_x,
-  //   max_y: req.body.max_y,
-  //   min_x:req.body.min_x,
-  //   min_y: req.body.min_y
-  // });
+
+  await models.coordinate.create({
+    image_id: null,
+    original_image_id: null,
+    max_x: req.body.max_x,
+    max_y: req.body.max_y,
+    min_x:req.body.min_x,
+    min_y: req.body.min_y
+  });
+
+  await models.uploads.findOne({
+    where: {
+      file_name: req.body.image_name
+    },
+  }).then(function(upload) {
+    coordinate.update({
+      image_id: upload.id
+    })
+  })
+
+  await models.originals.findOne({
+    where: {
+      file_name: req.body.original_image_id
+    },
+  }).then(function(originals) {
+    coordinate.update({
+      image_id: originals.id
+    })
+  })
+
+  res.sendStatus(201);
 });
 
 module.exports = router;
