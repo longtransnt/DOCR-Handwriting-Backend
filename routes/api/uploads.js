@@ -14,6 +14,19 @@ const s3 = new aws.S3({
 
 const S3_BUCKET = "medi-image-bucket"
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
+const getPagingData = (data, page, limit) => {
+  const { count: count, rows: rows } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(count / limit);
+  return { count, rows, totalPages, currentPage };
+};
+
 async function uploadToS3(key, buffer, mimetype) {
   return new Promise((resolve, reject) => {
     s3.putObject(
@@ -77,12 +90,18 @@ router.get("/api/uploads", async (req, res) => {
     })
   );
 
+  
+
   res.send(uploadList);
 });
 
 
 router.get("/api/uploads/unannotated", async (req, res) => {
-  let uploadList = await models.uploads.findAll({
+  const { page, size, title } = req.query;
+  const { limit, offset } = getPagination(page, size);
+  let uploadList = await models.uploads.findAndCountAll({
+    limit:limit,
+    offset:offset,
     where: {
       ground_truth: null,
     },
@@ -101,12 +120,14 @@ router.get("/api/uploads/unannotated", async (req, res) => {
     ]
   });
 
-  uploadList = await Promise.all(
-    uploadList.map(async upload => {
+
+  uploadList.rows = await Promise.all(
+    uploadList.rows.map(async upload => {
       const [imageUrl, thumbnailUrl] = await Promise.all([
         getSignedUrl(upload.image.bucket, upload.image.key),
         getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
       ])
+      
       return {
         ...upload.toJSON(),
         imageUrl,
@@ -115,7 +136,8 @@ router.get("/api/uploads/unannotated", async (req, res) => {
     })
   );
 
-  res.send(uploadList);
+  const response = getPagingData(uploadList,page,limit)
+  res.send(response);
 });
 
 router.post("/api/uploads", upload.single('image'), async (req, res) => {
