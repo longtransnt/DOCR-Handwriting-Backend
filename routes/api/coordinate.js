@@ -18,35 +18,43 @@ router.get("/api/coordinate/:id", function (req, res) {
 
 router.post("/api/coordinate", async (req, res) => {
   await console.log(req.body);
+  var var_image_id = null;
+  var var_original_id = null;
 
-  await models.coordinate.create({
-    image_id: null,
-    original_image_id: null,
-    max_x: req.body.max_x,
-    max_y: req.body.max_y,
-    min_x:req.body.min_x,
-    min_y: req.body.min_y
-  });
+  await models.originals.findOne({
+    where: {
+      file_name: req.body.original_image_name
+    },
+  }).then(function(original) {
+    if (original !== null)
+      var_original_id = original.dataValues.image_id;
+  })
 
   await models.uploads.findOne({
     where: {
       file_name: req.body.image_name
     },
   }).then(function(upload) {
-    coordinate.update({
-      image_id: upload.id
-    })
+    console.log(upload);
+    if (upload !== null) {
+      if (var_original_id !== null) {
+        upload.update({
+          original_image_id : var_original_id
+        })
+      }
+      var_image_id = upload.dataValues.image_id;
+    }
+      
   })
 
-  await models.originals.findOne({
-    where: {
-      file_name: req.body.original_image_id
-    },
-  }).then(function(originals) {
-    coordinate.update({
-      image_id: originals.id
-    })
-  })
+  await models.coordinate.create({
+    image_id: var_image_id,
+    original_image_id: var_original_id,
+    max_x: req.body.max_x,
+    max_y: req.body.max_y,
+    min_x:req.body.min_x,
+    min_y: req.body.min_y
+  });
 
   res.sendStatus(201);
 });

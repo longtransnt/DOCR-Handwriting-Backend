@@ -128,24 +128,4 @@ router.put("/api/uploads/:id",  async (req, res) => {
   });
 });
 
-router.get("api/uploads/search/:name", async (req, res) => {
-  models.uploads.findAll({
-    where: {
-      name: req.params.name
-    },
-  })
-  .then((data) => {
-    console.log(data);
-    if (data.length > '0') {
-      models.coordinate.update({
-        where: {
-          image_id: data.image_id
-        }
-      })
-      .catch((error) => res.json(error))
-    }
-  })
-  res.sendStatus(201);
-});
-
 module.exports = router;
