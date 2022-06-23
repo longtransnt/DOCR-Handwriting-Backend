@@ -60,7 +60,12 @@ function getSignedUrl(bucket, key, expires = 3600) {
 }
 
 router.get("/api/uploads", async (req, res) => {
-  let uploadList = await models.uploads.findAll({
+  const { page, size, title } = req.query;
+  const { limit, offset } = getPagination(page, size);
+
+  let uploadList = await models.uploads.findAndCountAll({
+    limit:limit,
+    offset:offset,
     include: [
       {
         model: models.images,
@@ -76,8 +81,8 @@ router.get("/api/uploads", async (req, res) => {
     ]
   });
 
-  uploadList = await Promise.all(
-    uploadList.map(async upload => {
+  uploadList.rows = await Promise.all(
+    uploadList.rows.map(async upload => {
       const [imageUrl, thumbnailUrl] = await Promise.all([
         getSignedUrl(upload.image.bucket, upload.image.key),
         getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
@@ -90,9 +95,8 @@ router.get("/api/uploads", async (req, res) => {
     })
   );
 
-  
-
-  res.send(uploadList);
+  const response = getPagingData(uploadList,page,limit)
+  res.send(response);
 });
 
 
