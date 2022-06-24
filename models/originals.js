@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      models.uploads.hasOne(models.images, {
+      models.originals.hasOne(models.images, {
         as: "image_orginal",
         foreignKey: "id",
         sourceKey: "image_id"
