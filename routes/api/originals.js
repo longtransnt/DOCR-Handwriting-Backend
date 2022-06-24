@@ -48,7 +48,7 @@ async function uploadToS3(key, buffer, mimetype) {
 
 router.get("/api/originals", function(req, res) {
   return []
-});
+}); 
 
 router.get("/api/originals/:id", async (req, res) => {
   let originalList = await models.originals.findAll({
@@ -69,7 +69,7 @@ router.get("/api/originals/:id", async (req, res) => {
   originalList = await Promise.all(
     originalList.map(async original => {
       const [imageUrl] = await Promise.all([
-        getSignedUrl(original.image.bucket, original.image.key),
+        getSignedUrl(original.image_original.bucket, original.image_original.key),
       ])
       return {
         ...original.toJSON(),
@@ -81,18 +81,18 @@ router.get("/api/originals/:id", async (req, res) => {
   res.send(originalList);
 });
 
-router.get("", async (req, res) => {
+// router.get("", async (req, res) => {
   
-  models.images.findByPk(req.params.id)
-  .then(
-    (original) => {
-      getSignedUrl(original.image.bucket, original.image.key),
-      res.json(original)
-    }
-  );
-});
+//   models.images.findByPk(req.params.id)
+//   .then(
+//     (original) => {
+//       getSignedUrl(original.image.bucket, original.image.key),
+//       res.json(original)
+//     }
+//   );
+// });
 
-router.post("/api/originals", upload.single('image_original'), async (req, res) => {
+router.post("/api/originals", upload.single('image'), async (req, res) => {
     const id = uuidv4();
     
     await Promise.all([

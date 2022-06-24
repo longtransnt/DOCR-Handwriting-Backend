@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       models.originals.hasOne(models.images, {
-        as: "image_orginal",
+        as: "image_original",
         foreignKey: "id",
         sourceKey: "image_id"
       });
