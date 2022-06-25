@@ -13,8 +13,44 @@ router.get("/api/coordinate", function (req, res) {
 });
 
 router.get("/api/coordinate/:id", function (req, res) {
-  models.coordinate.findByPk(req.params.id).then(coordinate => res.json(coordinate));
+  models.coordinate.findOne({
+    where: {
+      image_id: req.params.id
+    }
+  })    
+    .then(coordinate => res.json(coordinate));
 });
+
+// router.get("/api/coordinate/:id", async (req, res) => {
+//   let coordinateList = await models.coordinates.findAll({
+//     where: {
+//       image_id: req.params.id
+//     },
+//     include: [
+//       {
+//         model: models.images,
+//         as: "coordinate"
+//       }
+//     ],
+//     order: [
+//       ['id', 'ASC']
+//     ]
+//   });
+
+//   coordinateList = await Promise.all(
+//     coordinateList.map(async coordinate => {
+//       const [imageUrl] = await Promise.all([
+//         getSignedUrl(coordinate.coordinate.bucket, coordinate.coordinate.key),
+//       ])
+//       return {
+//         ...coordinate.toJSON(),
+//         imageUrl,
+//       }
+//     })
+//   );
+
+//   res.send(coordinateList);
+// });
 
 router.post("/api/coordinate", async (req, res) => {
   await console.log(req.body);
