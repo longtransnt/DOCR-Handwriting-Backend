@@ -12,7 +12,7 @@ const s3 = new aws.S3({
   region: 'us-west-2'
 });
 
-const S3_BUCKET = "medi-image-bucket"
+const S3_BUCKET = "medi-image-bucket-aws"
 
 function getSignedUrl(bucket, key, expires = 3600) {
   return new Promise((resolve, reject) => {
