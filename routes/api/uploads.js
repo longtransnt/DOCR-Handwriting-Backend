@@ -12,7 +12,7 @@ const s3 = new aws.S3({
   region: 'us-west-2'
 });
 
-const S3_BUCKET = "medi-image-bucket"
+const S3_BUCKET = "med-image-bucket"
 
 const getPagination = (page, size) => {
   const limit = size ? +size : 10;
