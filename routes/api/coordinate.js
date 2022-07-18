@@ -75,21 +75,25 @@ router.post("/api/coordinate", async (req, res) => {
     if (upload !== null) {
       if (var_original_id !== null) {
         upload.update({
-          original_image_id : var_original_id
+          original_image_id : var_original_id,
+          max_x: req.body.max_x,
+          max_y: req.body.max_y,
+          min_x:req.body.min_x,
+          min_y: req.body.min_y
         })
       }
       var_image_id = upload.dataValues.image_id;
     }
   })
 
-  await models.coordinate.create({
-    image_id: var_image_id,
-    original_image_id: var_original_id,
-    max_x: req.body.max_x,
-    max_y: req.body.max_y,
-    min_x:req.body.min_x,
-    min_y: req.body.min_y
-  });
+  // await models.coordinate.create({
+  //   image_id: var_image_id,
+  //   original_image_id: var_original_id,
+  //   max_x: req.body.max_x,
+  //   max_y: req.body.max_y,
+  //   min_x:req.body.min_x,
+  //   min_y: req.body.min_y
+  // });
 
   res.sendStatus(201);
 });

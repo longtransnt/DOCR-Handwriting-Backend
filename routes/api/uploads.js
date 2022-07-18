@@ -238,38 +238,38 @@ router.put("/api/uploads/:id",  async (req, res) => {
   });
 });
 
-router.put("/api/uploads/coordinate", async (req, res) => {
-  await console.log(req.body);
-  var var_image_id = null;
-  var var_original_id = null;
+// router.put("/api/coordinates", async (req, res) => {
+//   console.log(req.body)
+//   var var_image_id = null;
+//   var var_original_id = null;
 
-  await models.originals.findOne({
-    where: {
-      file_name: req.body.original_image_name
-    },
-  }).then(function(original) {
-    if (original !== null)
-      var_original_id = original.dataValues.image_id;
-  })
+//   await models.originals.findOne({
+//     where: {
+//       file_name: req.body.original_image_name
+//     },
+//   }).then(function(original) {
+//     if (original !== null)
+//       var_original_id = original.dataValues.image_id;
+//   })
 
-  await models.uploads.findOne({
-    where: {
-      file_name: req.body.image_name
-    },
-  }).then(function(upload) {
-    console.log(upload);
-    if (upload !== null) {
-      if (var_original_id !== null) {
-        upload.update({
-          original_image_id : var_original_id,
-          max_x: req.body.max_x,
-          max_y: req.body.max_y,
-          min_x:req.body.min_x,
-          min_y: req.body.min_y
-        })
-      }
-    }
-  })
-});
+//   await models.uploads.findOne({
+//     where: {
+//       file_name: req.body.image_name
+//     },
+//   }).then(function(upload) {
+//     console.log("Finding upload item")
+//     if (upload !== null) {
+//       if (var_original_id !== null) {
+//         upload.update({
+//           original_image_id : var_original_id,
+//           max_x: req.body.max_x,
+//           max_y: req.body.max_y,
+//           min_x:req.body.min_x,
+//           min_y: req.body.min_y
+//         })
+//       }
+//     }
+//   })
+// });
 
 module.exports = router;
