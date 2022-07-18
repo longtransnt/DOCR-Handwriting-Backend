@@ -169,7 +169,6 @@ router.get("/api/uploads/annotated", async (req, res) => {
     ]
   });
 
-
   uploadList.rows = await Promise.all(
     uploadList.rows.map(async upload => {
       const [imageUrl, thumbnailUrl] = await Promise.all([
@@ -218,7 +217,11 @@ router.post("/api/uploads", upload.single('image'), async (req, res) => {
     file_name: req.file.originalname,
     image_id: id,
     is_verified: false,
-    thumbnail_id: thumbnailId
+    thumbnail_id: thumbnailId,
+    max_x: null,
+    max_y: null,
+    min_x: null,
+    min_y: null
   });
   res.sendStatus(201);
 });
@@ -233,6 +236,40 @@ router.put("/api/uploads/:id",  async (req, res) => {
       res.json(note);
     });
   });
+});
+
+router.put("/api/uploads/coordinate", async (req, res) => {
+  await console.log(req.body);
+  var var_image_id = null;
+  var var_original_id = null;
+
+  await models.originals.findOne({
+    where: {
+      file_name: req.body.original_image_name
+    },
+  }).then(function(original) {
+    if (original !== null)
+      var_original_id = original.dataValues.image_id;
+  })
+
+  await models.uploads.findOne({
+    where: {
+      file_name: req.body.image_name
+    },
+  }).then(function(upload) {
+    console.log(upload);
+    if (upload !== null) {
+      if (var_original_id !== null) {
+        upload.update({
+          original_image_id : var_original_id,
+          max_x: req.body.max_x,
+          max_y: req.body.max_y,
+          min_x:req.body.min_x,
+          min_y: req.body.min_y
+        })
+      }
+    }
+  })
 });
 
 module.exports = router;

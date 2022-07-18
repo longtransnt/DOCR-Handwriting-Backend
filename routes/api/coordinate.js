@@ -80,7 +80,6 @@ router.post("/api/coordinate", async (req, res) => {
       }
       var_image_id = upload.dataValues.image_id;
     }
-      
   })
 
   await models.coordinate.create({

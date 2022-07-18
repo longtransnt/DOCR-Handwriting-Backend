@@ -48,8 +48,12 @@ module.exports = (sequelize, DataTypes) => {
     ground_truth: DataTypes.STRING,
     confidence: DataTypes.BIGINT,
     is_verified: DataTypes.BOOLEAN,
+    max_x: DataTypes.REAL,
+    max_y: DataTypes.REAL,
+    min_x: DataTypes.REAL,
+    min_y: DataTypes.REAL,
     createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
+    updatedAt: DataTypes.DATE,
   }, {
       sequelize,
       modelName: 'uploads',

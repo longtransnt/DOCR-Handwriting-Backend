@@ -20,6 +20,18 @@ module.exports = {
       original_image_id: {
         type: Sequelize.UUID
       },
+      max_x: {
+        type: Sequelize.REAL
+      },
+      max_y: {
+        type: Sequelize.REAL
+      },
+      min_x: {
+        type: Sequelize.REAL
+      },
+      min_y: {
+        type: Sequelize.REAL
+      },
       ground_truth: {
         type: Sequelize.STRING
       } ,
