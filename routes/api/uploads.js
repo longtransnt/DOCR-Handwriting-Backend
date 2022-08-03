@@ -5,14 +5,14 @@ const sharp = require("sharp");
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 const aws = require("aws-sdk");
 const s3 = new aws.S3({
-  signatureVersion: 'v4',
-  region: 'us-west-2'
+  signatureVersion: "v4",
+  region: "us-west-2",
 });
 
-const S3_BUCKET = "medi-image-bucket"
+const S3_BUCKET = "medi-image-bucket";
 
 const getPagination = (page, size) => {
   const limit = size ? +size : 10;
@@ -34,7 +34,7 @@ async function uploadToS3(key, buffer, mimetype) {
         Bucket: S3_BUCKET,
         ContentType: mimetype,
         Key: key,
-        Body: buffer
+        Body: buffer,
       },
       () => resolve()
     );
@@ -48,7 +48,7 @@ function getSignedUrl(bucket, key, expires = 3600) {
       {
         Bucket: bucket,
         Key: key,
-        Expires: expires
+        Expires: expires,
       },
       function (err, url) {
         if (err) throw new Error(err);
@@ -63,37 +63,35 @@ router.get("/api/uploads", async (req, res) => {
   const { page, size, title } = req.query;
   const { limit, offset } = getPagination(page, size);
   let uploadList = await models.uploads.findAndCountAll({
-    limit:limit,
-    offset:offset,
+    limit: limit,
+    offset: offset,
     include: [
       {
         model: models.images,
-        as: "image"
+        as: "image",
       },
       {
         model: models.images,
-        as: "thumbnail"
-      }
+        as: "thumbnail",
+      },
     ],
-    order: [
-      ['id', 'ASC']
-    ]
+    order: [["id", "ASC"]],
   });
   uploadList.rows = await Promise.all(
-    uploadList.rows.map(async upload => {
+    uploadList.rows.map(async (upload) => {
       const [imageUrl, thumbnailUrl] = await Promise.all([
         getSignedUrl(upload.image.bucket, upload.image.key),
         getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
-      ])
+      ]);
       return {
         ...upload.toJSON(),
         imageUrl,
-        thumbnailUrl
-      }
+        thumbnailUrl,
+      };
     })
   );
 
-  const response = getPagingData(uploadList,page,limit)
+  const response = getPagingData(uploadList, page, limit);
   res.send(response);
 });
 
@@ -101,43 +99,40 @@ router.get("/api/uploads/unannotated", async (req, res) => {
   const { page, size, title } = req.query;
   const { limit, offset } = getPagination(page, size);
   let uploadList = await models.uploads.findAndCountAll({
-    limit:limit,
-    offset:offset,
+    limit: limit,
+    offset: offset,
     where: {
       ground_truth: null,
     },
     include: [
       {
         model: models.images,
-        as: "image"
+        as: "image",
       },
       {
         model: models.images,
-        as: "thumbnail"
-      }
+        as: "thumbnail",
+      },
     ],
-    order: [
-      ['id', 'ASC']
-    ]
+    order: [["id", "ASC"]],
   });
 
-
   uploadList.rows = await Promise.all(
-    uploadList.rows.map(async upload => {
+    uploadList.rows.map(async (upload) => {
       const [imageUrl, thumbnailUrl] = await Promise.all([
         getSignedUrl(upload.image.bucket, upload.image.key),
         getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
-      ])
-      
+      ]);
+
       return {
         ...upload.toJSON(),
         imageUrl,
-        thumbnailUrl
-      }
+        thumbnailUrl,
+      };
     })
   );
 
-  const response = getPagingData(uploadList,page,limit)
+  const response = getPagingData(uploadList, page, limit);
   res.send(response);
 });
 
@@ -147,54 +142,49 @@ router.get("/api/uploads/annotated", async (req, res) => {
   const limit = 500;
   const offset = 0;
   let uploadList = await models.uploads.findAndCountAll({
-    limit:limit,
-    offset:offset,
+    limit: limit,
+    offset: offset,
     where: {
       ground_truth: {
-        [Op.not]: null
+        [Op.not]: null,
       },
     },
     include: [
       {
         model: models.images,
-        as: "image"
+        as: "image",
       },
       {
         model: models.images,
-        as: "thumbnail"
-      }
+        as: "thumbnail",
+      },
     ],
-    order: [
-      ['id', 'ASC']
-    ]
+    order: [["id", "ASC"]],
   });
 
-
   uploadList.rows = await Promise.all(
-    uploadList.rows.map(async upload => {
+    uploadList.rows.map(async (upload) => {
       const [imageUrl, thumbnailUrl] = await Promise.all([
         getSignedUrl(upload.image.bucket, upload.image.key),
         getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
-      ])
-      
+      ]);
+
       return {
         ...upload.toJSON(),
         imageUrl,
-        thumbnailUrl
-      }
+        thumbnailUrl,
+      };
     })
   );
 
-  const response = getPagingData(uploadList,page,limit)
+  const response = getPagingData(uploadList, page, limit);
   res.send(response);
 });
 
-router.post("/api/uploads", upload.single('image'), async (req, res) => {
+router.post("/api/uploads", upload.single("image"), async (req, res) => {
   const id = uuidv4();
-  const thumbnailId = uuidv4()
-  const thumbnail = await sharp(req.file.buffer)
-    .resize(200)
-    .toBuffer();
+  const thumbnailId = uuidv4();
+  const thumbnail = await sharp(req.file.buffer).resize(200).toBuffer();
 
   await Promise.all([
     uploadToS3(`images/${id}`, req.file.buffer, req.file.mimetype),
@@ -205,12 +195,12 @@ router.post("/api/uploads", upload.single('image'), async (req, res) => {
     models.images.create({
       id,
       bucket: S3_BUCKET,
-      key: `images/${id}`
+      key: `images/${id}`,
     }),
     models.images.create({
       id: thumbnailId,
       bucket: S3_BUCKET,
-      key: `thumbnails/${thumbnailId}`
+      key: `thumbnails/${thumbnailId}`,
     }),
   ]);
 
@@ -218,13 +208,13 @@ router.post("/api/uploads", upload.single('image'), async (req, res) => {
     file_name: req.file.originalname,
     image_id: id,
     is_verified: false,
-    thumbnail_id: thumbnailId
+    thumbnail_id: thumbnailId,
   });
   res.sendStatus(201);
 });
 
-router.put("/api/uploads/:id",  async (req, res) => {
-  models.uploads.findByPk(req.params.id).then(function(up) {
+router.put("/api/uploads/:id", async (req, res) => {
+  models.uploads.findByPk(req.params.id).then(function (up) {
     up.update({
       ground_truth: req.body.ground_truth,
       confidence: req.body.confidence,
