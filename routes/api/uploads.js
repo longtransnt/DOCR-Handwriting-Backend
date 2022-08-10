@@ -137,6 +137,7 @@ router.get("/api/uploads/unannotated", async (req, res) => {
 });
 
 const { Op } = require("sequelize");
+const { Router } = require("express");
 router.get("/api/uploads/annotated", async (req, res) => {
   const { page, size, title } = req.query;
   const limit = 500;
@@ -178,6 +179,49 @@ router.get("/api/uploads/annotated", async (req, res) => {
   );
 
   const response = getPagingData(uploadList, page, limit);
+  res.send(response);
+});
+
+router.get("/api/uploads/originals/:id", async (req, res) => {
+  const { page, size, title } = req.query;
+  const limit = 30;
+  const offset = 0;
+
+  let originalList = await models.uploads.findAndCountAll({
+    limit: limit,
+    offset: offset,
+    where: {
+      original_image_id: req.params.id,
+    },
+    include: [
+      {
+        model: models.images,
+        as: "image",
+      },
+      {
+        model: models.images,
+        as: "thumbnail",
+      },
+    ],
+    order: [["id", "ASC"]],
+  });
+
+  originalList.rows = await Promise.all(
+    originalList.rows.map(async (upload) => {
+      const [imageUrl, thumbnailUrl] = await Promise.all([
+        getSignedUrl(upload.image.bucket, upload.image.key),
+        getSignedUrl(upload.thumbnail.bucket, upload.thumbnail.key),
+      ]);
+
+      return {
+        ...upload.toJSON(),
+        imageUrl,
+        thumbnailUrl,
+      };
+    })
+  );
+
+  const response = getPagingData(originalList, page, limit);
   res.send(response);
 });
 
