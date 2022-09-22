@@ -39,6 +39,7 @@ To run this app you need basic setups:
 - GitHub Repository
 - Amazon RDS (Amazon Relational Database Services)
 - Amazon CodePipeline 
+- Amazon EBS (Amazon Elastic Beanstalk)
 - Amazon S3 (Amazon Simple Storage Service)
 
 
@@ -61,6 +62,17 @@ To run this project, you will need to add the following environment variables to
 Maybe need to change some constant variables in ./routes/api/ files
 
 `const S3_BUCKET = [S3 BUCKET NAME];`
+## Localhost
+
+To run this project as localhost, set up environment variables and AWS Credentials Key (if needed):
+```
+  npm start
+```
+
+Access the following endpoint to use the API:
+```http
+  localhost:8080
+```
 ## API Reference
 
 #### Get all uploads
