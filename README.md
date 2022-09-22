@@ -1,5 +1,5 @@
 
-#  Upload Annotation API
+#  DOCR-Handwriting-Backend
 
   API Services Layer for Annotation Application for HANDWRITING RECOGNITION APPLICATION FOR TETANUS TREATMENT
 
